@@ -5,13 +5,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/class.dart';
 import '../providers/api_providers.dart';
+import '../providers/id_provider.dart';
 
 class TeacherHomeScreen extends ConsumerWidget {
   const TeacherHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final classes = ref.watch(teacherClassesProvider);
+    final teacherId = ref.watch(teacherIdProvider);
+    final classes = ref.watch(teacherClassesProvider(teacherId));
 
     return Scaffold(
       appBar: AppBar(

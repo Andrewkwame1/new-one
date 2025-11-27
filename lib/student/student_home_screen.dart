@@ -4,13 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/class.dart';
 import '../providers/api_providers.dart';
+import '../providers/id_provider.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
   const StudentHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final classes = ref.watch(studentClassesProvider);
+    final studentId = ref.watch(studentIdProvider);
+    final classes = ref.watch(studentClassesProvider(studentId));
 
     return Scaffold(
       appBar: AppBar(

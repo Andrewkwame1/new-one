@@ -7,12 +7,12 @@ final apiServiceProvider = Provider<ApiService>((ref) {
   return ApiService();
 });
 
-final teacherClassesProvider = FutureProvider<List<Class>>((ref) async {
+final teacherClassesProvider = FutureProvider.family<List<Class>, String>((ref, teacherId) async {
   final apiService = ref.read(apiServiceProvider);
-  return await apiService.getTeacherClasses();
+  return await apiService.getTeacherClasses(teacherId);
 });
 
-final studentClassesProvider = FutureProvider<List<Class>>((ref) async {
+final studentClassesProvider = FutureProvider.family<List<Class>, String>((ref, studentId) async {
   final apiService = ref.read(apiServiceProvider);
-  return await apiService.getStudentClasses();
+  return await apiService.getStudentClasses(studentId);
 });

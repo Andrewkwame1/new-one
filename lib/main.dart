@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:myapp/auth/auth_screen.dart';
+import 'package:myapp/auth/login_screen.dart';
+import 'package:myapp/auth/signup_screen.dart';
 import 'package:myapp/student/face_recognition_screen.dart';
 import 'package:myapp/student/student_home_screen.dart';
 import 'package:myapp/teacher/add_class_screen.dart';
@@ -89,7 +90,13 @@ class FaceRecognitionAttendanceApp extends StatelessWidget {
         GoRoute(
           path: '/',
           builder: (BuildContext context, GoRouterState state) {
-            return const AuthScreen();
+            return const LoginScreen();
+          },
+        ),
+        GoRoute(
+          path: '/signup',
+          builder: (BuildContext context, GoRouterState state) {
+            return const SignupScreen();
           },
         ),
         GoRoute(
@@ -128,7 +135,8 @@ class FaceRecognitionAttendanceApp extends StatelessWidget {
             );
           },
         ),
-      ],    );
+      ],
+    );
 
     return MaterialApp.router(
       routerConfig: router,

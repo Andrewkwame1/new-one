@@ -52,13 +52,27 @@ class ApiService {
     }
   }
 
-  Future<List<Class>> getTeacherClasses() async {
-    // TODO: Implement actual API call with teacher ID
-    return Future.value([]);
+  Future<List<Class>> getTeacherClasses(String teacherId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/classes'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final List<Class> allClasses = data.map((json) => Class.fromJson(json)).toList();
+      return allClasses.where((c) => c.teacherId == teacherId).toList();
+    } else {
+      throw Exception('Failed to load classes');
+    }
   }
 
-  Future<List<Class>> getStudentClasses() async {
-    // TODO: Implement actual API call with student ID
-    return Future.value([]);
+  Future<List<Class>> getStudentClasses(String studentId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/classes'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final List<Class> allClasses = data.map((json) => Class.fromJson(json)).toList();
+      return allClasses.where((c) => c.students.contains(studentId)).toList();
+    } else {
+      throw Exception('Failed to load classes');
+    }
   }
 }

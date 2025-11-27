@@ -29,6 +29,7 @@ class _AddClassScreenState extends ConsumerState<AddClassScreen> {
       final newClass = Class(
         id: DateTime.now().millisecondsSinceEpoch.toString(), // Temporary ID
         name: _classNameController.text,
+        teacherId: '1', // Hardcoded teacher ID
         students: _studentIds.where((id) => id.isNotEmpty).toList(),
       );
 

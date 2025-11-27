@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../providers/api_providers.dart';
+import '../providers/id_provider.dart';
 
-class StudentDashboardScreen extends StatefulWidget {
+class StudentDashboardScreen extends ConsumerWidget {
   const StudentDashboardScreen({super.key});
 
   @override
-  State<StudentDashboardScreen> createState() => _StudentDashboardScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studentId = ref.watch(studentIdProvider);
+    final classesAsyncValue = ref.watch(studentClassesProvider(studentId));
 
-class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
-  final _studentIdController = TextEditingController();
-
-  @override
-  void dispose() {
-    _studentIdController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -30,50 +23,58 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _studentIdController,
-              decoration: const InputDecoration(
-                labelText: 'Enter Your Student ID',
-                border: OutlineInputBorder(),
+            Text(
+              "Your Classes",
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: classesAsyncValue.when(
+                data: (classes) {
+                  if (classes.isEmpty) {
+                    return const Center(
+                      child: Text("You are not enrolled in any classes."),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: classes.length,
+                    itemBuilder: (context, index) {
+                      final classInfo = classes[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          title: Text(classInfo.name),
+                          subtitle: Text("Class ID: ${classInfo.id}"),
+                          trailing: ElevatedButton(
+                            onPressed: () {
+                              context.go(
+                                  '/student/attendance-history/${classInfo.id}/$studentId');
+                            },
+                            child: const Text('View History'),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Text("Error loading classes: $error"),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                final studentId = _studentIdController.text;
-                if (studentId.isNotEmpty) {
-                  context.go('/scan-qr?studentId=$studentId');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter your Student ID'),
-                    ),
-                  );
-                }
+                context.go('/scan-qr?studentId=$studentId');
               },
               icon: const Icon(Icons.qr_code_scanner),
               label: const Text('Scan QR Code for Attendance'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final studentId = _studentIdController.text;
-                if (studentId.isNotEmpty) {
-                  // Hardcoded classId for now, will be replaced with a dynamic way to select a class
-                  const classId = 'your-class-id';
-                  context.go(
-                      '/student/attendance-history/$classId/$studentId');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter your Student ID'),
-                    ),
-                  );
-                }
-              },
-              child: const Text('View Attendance History'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+              ),
             ),
           ],
         ),
